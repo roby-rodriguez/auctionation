@@ -1,0 +1,32 @@
+<div>
+	<a ui-sref="playerStats" class="pull-right btn btn-primary btn-outline btn-rounded">Back to Player Stats</a>
+	<h2>Inventory <small>Here you can see the list of your available items</small></h2>
+	<span class="glyphicon glyphicon-dashboard bg-fade"></span>
+	<div class="jumbotron">
+		<div ng-include src="'templates/alert.html'"></div>
+		<div class="container">
+			<h1>Available items</h1>
+			<p>You can start a new auction any time</p>
+			<div class="form-group">
+				<div ng-repeat="item in items">
+					<div class="row">
+						<div class="col-xs-4 col-md-4">
+							<img ng-src="{{'resources/images/' + item.type + '.png'}}" class="img-responsive img-rounded" />
+							<label class="control-label">{{ item.type | capitalize }}</label>
+						</div>
+						<div class="col-xs-4 col-md-2">
+							<p class="form-control-static">{{ item.quantity }}</p>
+						</div>
+						<div class="col-md-4">
+							<a class="btn btn-default" href="#" ng-click="showPopup(item)" role="button">Auction</a>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<p>
+				<a class="btn btn-primary btn-lg btn-outline btn-rounded">Learn more</a>
+			</p>
+		</div>
+	</div>
+</div>

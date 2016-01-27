@@ -1,0 +1,26 @@
+<div class="dashboard-page">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-3 col-md-2 sidebar">
+
+       <div class="text-center">
+        <h2 class="brand">Real Time Auction System</h2>
+        <img src="resources/images/user_male.svg" class="user-avatar" /><br />
+        <a ui-sref="login" class="btn btn-white btn-outline btn-rounded btn-sm" ng-click="logout()">Logout</a>
+      </div>
+
+      <ul class="nav nav-sidebar">
+        <li ng-class="{active: $state.includes('playerStats')}"><a ui-sref="playerStats">Player Stats <span class="sr-only">(current)</span></a></li>
+        <li ng-class="{active: $state.includes('inventory')}"><a ui-sref="inventory">Inventory</a></li>
+        <li ng-class="{active: $state.includes('currentAuction')}"><a ui-sref="currentAuction">Current Auction</a></li>
+        <li class="nav-divider"></li>
+        <li><a href="http://www.strapui.com/ani-angularjs-theme">Homepage of this template</a></li>
+      </ul>
+
+    </div>
+
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" ui-view>
+    </div>
+  </div>
+</div>
+</div>

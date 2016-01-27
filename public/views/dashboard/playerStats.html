@@ -1,0 +1,25 @@
+<div>
+    <a ui-sref="currentAuction" class="pull-right btn btn-primary btn-outline btn-rounded">Current Auction</a>
+    <a ui-sref="inventory" class="pull-right btn btn-primary btn-outline btn-rounded">Inventory</a>
+    <h2>Player Stats <small>Check out your inventory and start bidding!</small></h2>
+    <div class="jumbotron">
+        <div ng-include src="'templates/alert.html'"></div>
+        <div class="container">
+            <h1>Welcome, {{user.name}}!</h1>
+            This is the section of the app which shows you the main player statistics<br /><br />
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Name</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">{{user.name}}</p>
+                </div>
+                <label class="col-sm-2 control-label">Coins</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">{{user.coins}}</p>
+                </div>
+            </div>
+            <p>
+                <a class="btn btn-primary btn-lg btn-outline btn-rounded">Learn more</a>
+            </p>
+        </div>
+    </div>
+</div>

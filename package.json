@@ -1,0 +1,21 @@
+{
+  "name": "AuctioNation",
+  "namelower": "auctionation",
+  "version": "0.0.1",
+  "description": "Simple auction system",
+  "main": "server.js",
+  "readme": "README.md",
+  "author": "RobyRodriguez",
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "devDependencies": {
+    "express"                 : "*",
+    "errorhandler"            : "*",
+    "body-parser"             : "*",
+    "morgan"                  : "*",
+    "socket.io"               : "*"
+  },
+  "scripts": {
+  }
+}

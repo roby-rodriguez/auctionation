@@ -1,0 +1,46 @@
+<div>
+	<a ui-sref="playerStats" class="pull-right btn btn-primary btn-outline btn-rounded">Back to Player Stats</a>
+	<h2>Current auction <small>Here you can check if there is an auction in progress</small></h2>
+	<span class="glyphicon glyphicon-dashboard bg-fade"></span>
+	<div class="jumbotron">
+		<div ng-include src="'templates/alert.html'"></div>
+		<div class="container" ng-hide="auction">
+			<h1>No auction at the moment.</h1>
+		</div>
+		<div class="container" ng-show="auction">
+			<h1>Auction in progress</h1>
+			<p>Place your bid</p>
+			<div class="form-group">
+				<div class="row">
+					<div class="col-md-2">
+						<img ng-src="{{'resources/images/' + auction.type + '.png'}}" class="img-responsive img-rounded" ng-if="auction.type" />
+						<label class="control-label">{{ auction.type | capitalize }}</label>
+					</div>
+					<div class="col-md-2">
+						<label class="control-label">Quantity</label>
+						<p class="form-control-static">{{auction.quantity}}</p>
+					</div>
+					<div class="col-md-2">
+						<label class="control-label">Time left</label>
+						<p class="form-control-static">{{auction.timeRemaining}}</p>
+					</div>
+					<div class="col-md-2">
+						<label class="control-label">Starting price</label>
+						<p class="form-control-static">{{auction.minValue}}</p>
+					</div>
+					<div class="col-md-2">
+						<label class="control-label">Winning bid</label>
+						<p class="form-control-static">{{auction.winningBid}}</p>
+					</div>
+					<div class="col-md-2" ng-show="allowBidding()">
+						<input type="text" class="form-control" placeholder="Enter bid value" ng-model="bid" />
+						<a class="btn btn-default" href="#" ng-click="placeBid()" role="button">Place bid</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<p>
+			<a class="btn btn-primary btn-lg btn-outline btn-rounded">Learn more</a>
+		</p>
+	</div>
+</div>
