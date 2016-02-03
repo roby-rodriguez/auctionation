@@ -6,16 +6,47 @@
   "main": "server.js",
   "readme": "README.md",
   "author": "RobyRodriguez",
-  "engines": {
-    "node": ">=0.10.0"
+  "bugs" : {
+    "url" : "https://github.com/roby-rodriguez/auctionation/issues"
   },
-  "devDependencies": {
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/roby-rodriguez/auctionation.git"
+  },
+  "license": "MIT",
+  "dependencies": {
     "express"                 : "*",
     "errorhandler"            : "*",
     "body-parser"             : "*",
+    "compression"             : "*",
     "morgan"                  : "*",
     "socket.io"               : "*"
   },
+  "devDependencies": {
+    "gulp"                    : "*",
+    "gulp-load-plugins"       : "*",
+    "gulp-plumber"            : "*",
+    "gulp-less"               : "*",
+    "gulp-cssnano"            : "*",
+    "gulp-autoprefixer"       : "*",
+    "gulp-jshint"             : "*",
+    "gulp-csso"               : "*",
+    "gulp-replace"            : "*",
+    "gulp-rename"             : "*",
+    "gulp-size"               : "*",
+    "gulp-imagemin"           : "*",
+    "gulp-svgmin"             : "*",
+    "gulp-newer"              : "*",
+    "gulp-uglify"             : "*",
+    "gulp-notify"             : "*",
+    "gulp-ng-annotate"        : "*",
+    "gulp-filter"             : "*",
+    "gulp-flatten"            : "*",
+    "del"                     : "*",
+    "main-bower-files"        : "*",
+    "run-sequence"            : "*"
+  },
   "scripts": {
+    "test": "gulp test"
   }
 }

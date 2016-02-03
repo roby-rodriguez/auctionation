@@ -5,21 +5,23 @@ var express         = require('express');
 var errorhandler    = require('errorhandler');
 var logger          = require('morgan');
 var bodyParser      = require('body-parser');
+var compress        = require('compression');
 // setup express
 var app             = express();
 
 
 // log all requests with morgan
 app.use(logger('dev'));
+// allow gzip compression for compatible browsers
+app.use(compress());
 // use middleware to parse application/json
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// set the static files location /public/img will be /img for users
-app.use(express.static(__dirname + '/public'));
-//fixme this is ugly
-app.use('/fonts',  express.static(__dirname + '/public/styles'));
+// serve bower libraries
 app.use('/bower_components',  express.static(__dirname + '/bower_components'));
+// set the static files location /public/img will be /img for users
+app.use(express.static(__dirname + '/public/dist'));
 
 // Cross-origin resource sharing (CORS) headers
 app.all('/*', function (req, res, next) {
