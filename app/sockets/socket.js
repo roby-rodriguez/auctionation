@@ -47,7 +47,7 @@ module.exports = function (io) {
                 // reset values
                 current = null;
             } else {
-                current.timeRemaining--;
+                io.emit('time:update', current.timeRemaining--);
             }
         } else {
             if (auctions.length) {

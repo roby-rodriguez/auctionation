@@ -8,7 +8,7 @@
  * Controller of auctionation
  */
 angular.module('auctionation')
-    .controller('DashboardCtrl', function($rootScope, $scope, $state, $location, $timeout, socket, AuctionFactory, LoginFactory, LoginService) {
+    .controller('DashboardCtrl', function($rootScope, $scope, $state, $location, socket, AuctionFactory, LoginFactory, LoginService) {
         var timer;
         $scope.$state = $state;
         // check server for any ongoing auctions
@@ -21,8 +21,6 @@ angular.module('auctionation')
 
             AuctionFactory.setAuction(auction);
             $rootScope.$broadcast('auctionChanged', []);
-            // start display timer
-            timer = $timeout($scope.onTimeout, 1000);
         });
 
         socket.on('auction:bid', function (auction) {
@@ -62,15 +60,9 @@ angular.module('auctionation')
             });
         });
 
-        // create a simple timer to display current auction remaining time for bidding
-        $scope.onTimeout = function () {
-            if (AuctionFactory.notYetExpired()) {
-                AuctionFactory.decrementTimeRemaining();
-                timer = $timeout($scope.onTimeout, 1000);
-            } else {
-                AuctionFactory.reset();
-            }
-        };
+        socket.on('time:update', function (timeRemaining) {
+            AuctionFactory.setTimeRemaining(timeRemaining);
+        });
 
         $scope.logout = function () {
             // request log out from all sessions

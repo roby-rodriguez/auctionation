@@ -11,11 +11,8 @@ angular.module('auctionation').factory('AuctionFactory', function () {
         getAuction: function() {
             return auction;
         },
-        notYetExpired: function () {
-            return auction && auction.timeRemaining > 0;
-        },
-        decrementTimeRemaining: function () {
-            auction.timeRemaining--;
+        setTimeRemaining: function (timeRemaining) {
+            auction.timeRemaining = timeRemaining;
         },
         reset: function () {
             auction = null;
