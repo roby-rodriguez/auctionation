@@ -42,7 +42,11 @@
     "gulp-ng-annotate"        : "*",
     "gulp-filter"             : "*",
     "gulp-flatten"            : "*",
+    "gulp-concat"             : "*",
+    "gulp-if"                 : "*",
+    "gulp-cached"             : "*",
     "del"                     : "*",
+    "yargs"                   : "*",
     "main-bower-files"        : "*",
     "run-sequence"            : "*"
   },
