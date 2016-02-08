@@ -24,6 +24,7 @@ var gulp = require('gulp');
 var runSequence = require('run-sequence');
 var del = require('del');
 var argv = require('yargs').argv;
+var mainBowerFiles = require('main-bower-files');
 var $ = require('gulp-load-plugins')();
 
 var config = require('./gulpconfig');
@@ -39,107 +40,99 @@ var onError = function (err) {
 };
 
 gulp.task('styles', function() {
-    return gulp.src('public/styles/main.less')
+    return gulp.src(config.styles.src)
         // prevents gulp from crashing
         .pipe($.plumber({errorHandler: onError}))
         // keep track of changes - watches will apply task only on changed files
-        .pipe($.cached('.cache/styling'))
+        .pipe($.cached(config.styles.cache))
         // compile less to css
         .pipe($.less())
         // minify css
         .pipe($.cssnano())
         // expand to browser-specific rules
-        .pipe($.autoprefixer({browsers: ['last 1 version']}))
-        .pipe($.rename({suffix : '.min'}))
-        .pipe(gulp.dest('public/dist/styles'))
+        .pipe($.autoprefixer(config.styles.options.autoprefixer))
+        .pipe($.rename(config.all.options.rename))
+        .pipe(gulp.dest(config.styles.dest))
         // output size
         .pipe($.size());
 });
 
 gulp.task('lint', function() {
-    return gulp.src('public/scripts/**/*.js')
+    return gulp.src(config.scripts.src)
         // prevents gulp from crashing
         .pipe($.plumber({errorHandler: onError}))
         // keep track of changes - watches will apply task only on changed files
-        .pipe($.cached('.cache/linting'))
+        .pipe($.cached(config.scripts.options.lint.cache))
         // check js code
         .pipe($.jshint())
         // add reporting tool
-        .pipe($.jshint.reporter('default', { verbose: true }));
+        .pipe($.jshint.reporter(config.scripts.options.lint.reporterType,
+            config.scripts.options.lint.reporter));
         //.pipe($.jshint.reporter('jshint-stylish'))
         //.pipe($.jshint.reporter('fail'))
 });
 
 gulp.task('scripts', ['lint'], function() {
-    var isProd = config.env === 'prod';
-    return gulp.src('public/scripts/**/*.js')
+    return gulp.src(config.scripts.src)
         // prevents gulp from crashing
         .pipe($.plumber({errorHandler: onError}))
         // keep track of changes - watches will apply task only on changed files
-        .pipe($.cached('.cache/scripting'))
+        .pipe($.cached(config.scripts.cache))
         // concat to single file
-        .pipe($.concat('all.js'))
-        .pipe($.rename({suffix: '.min'}))
+        .pipe($.concat(config.scripts.distFile))
+        .pipe($.rename(config.all.options.rename))
         // add dep inj annotations to allow correct minification
         .pipe($.ngAnnotate())
         // minify js
-        .pipe($.if(isProd, $.uglify()))
-        .pipe(gulp.dest('public/dist/scripts'))
+        .pipe($.if(config.prodEnv, $.uglify()))
+        .pipe(gulp.dest(config.scripts.dest))
         // output size
         .pipe($.size());
 });
 
 gulp.task('images', function() {
-    return gulp.src('public/resources/images/**/*')
+    return gulp.src(config.images.src)
         // prevents gulp from crashing
         .pipe($.plumber({errorHandler: onError}))
         // keep track of changes - watches will apply task only on changed files
-        .pipe($.cached('.cache/resources/images'))
-        // process only modified images
-        .pipe($.newer('public/dist/images'))
-        .pipe($.imagemin({
-            progressive: true,
-            interlaced: true
-        }))
-        .pipe(gulp.dest('public/dist/resources/images'))
+        .pipe($.cached(config.images.cache))
+        // compress images
+        .pipe($.imagemin(config.images.options.imagemin))
+        .pipe(gulp.dest(config.images.dest))
         // output size
         .pipe($.size());
 });
 
 gulp.task('svgs', function() {
-    return gulp.src('public/resources/images/**/*.svg')
+    return gulp.src(config.svgs.src)
         // prevents gulp from crashing
         .pipe($.plumber({errorHandler: onError}))
         // keep track of changes - watches will apply task only on changed files
-        .pipe($.cached('.cache/resources/vector_graphics'))
-        // process only modified images
-        .pipe($.newer('public/dist/images'))
+        .pipe($.cached(config.svgs.cache))
+        // minify vector graphics
         .pipe($.svgmin())
-        .pipe(gulp.dest('public/dist/resources/images'))
+        .pipe(gulp.dest(config.svgs.dest))
         // output size
         .pipe($.size());
 });
 
 gulp.task('fonts', function() {
-    return gulp.src(require('main-bower-files')()
-        .concat('bower_components/bootstrap/fonts/*'))
-        .pipe($.filter('**/*.{eot,svg,ttf,woff,woff2}'))
+    return gulp.src(mainBowerFiles()
+        .concat(config.fonts.src))
+        .pipe($.filter(config.fonts.options.filter))
         .pipe($.flatten())
-        .pipe(gulp.dest('public/dist/resources/fonts'));
+        .pipe(gulp.dest(config.fonts.dest));
 });
 
 gulp.task('others', function() {
-    return gulp.src([
-        'public/views/**/*.html',
-        'public/templates/**/*.html',
-        'public/*.*'
-    ], { base: 'public' }).pipe(gulp.dest('public/dist'))
-    // keep track of changes - watches will apply task only on changed files
-    .pipe($.cached('.cache/others'));
+    return gulp.src(config.others.src, config.others.options)
+        // keep track of changes - watches will apply task only on changed files
+        .pipe($.cached(config.others.cache))
+        .pipe(gulp.dest(config.others.dest));
 });
 
 gulp.task('clean', function() {
-    return del(['public/dist']);
+    return del(config.clean.src);
 });
 
 gulp.task('test', function(done) {
@@ -151,15 +144,11 @@ gulp.task('test', function(done) {
 });
 
 gulp.task('watch', function() {
-    gulp.watch('public/styles/**/*.js', ['scripts']);
-    gulp.watch('public/styles/**/*.less', ['styles']);
-    gulp.watch('public/resources/images/**/*', ['images']);
-    gulp.watch('public/resources/images/**/*.svg', ['svgs']);
-    gulp.watch([
-        'public/views/**/*.html',
-        'public/templates/**/*.html',
-        'public/*.*'
-    ], ['others']);
+    gulp.watch(config.scripts.src, ['scripts']);
+    gulp.watch(config.styles.srcPath, ['styles']);
+    gulp.watch(config.images.src, ['images']);
+    gulp.watch(config.svgs.src, ['svgs']);
+    gulp.watch(config.others.src, ['others']);
     console.log('Started watchers...');
 });
 
@@ -170,7 +159,7 @@ gulp.task('watch', function() {
  * gulp deploy --type dev
  */
 gulp.task('deploy', function() {
-    if (argv.type && argv.type !== 'dev') config.env = 'prod';
+    if (argv.type && argv.type !== 'dev') config.prodEnv = true;
     console.log('Deploy started at ' + new Date());
     runSequence('clean', 'styles', 'scripts', 'images', 'svgs', 'fonts', 'others', 'watch', function() {
         console.log('Deploy finished at ' + new Date());

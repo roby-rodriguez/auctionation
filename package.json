@@ -36,7 +36,6 @@
     "gulp-size"               : "*",
     "gulp-imagemin"           : "*",
     "gulp-svgmin"             : "*",
-    "gulp-newer"              : "*",
     "gulp-uglify"             : "*",
     "gulp-notify"             : "*",
     "gulp-ng-annotate"        : "*",
