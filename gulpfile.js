@@ -77,7 +77,7 @@ gulp.task('scripts', ['lint'], function() {
         // prevents gulp from crashing
         .pipe($.plumber({errorHandler: onError}))
         // keep track of changes - watches will apply task only on changed files
-        .pipe($.cached(config.scripts.cache))
+        //.pipe($.cached(config.scripts.cache))
         // concat to single file
         .pipe($.concat(config.scripts.distFile))
         .pipe($.rename(config.all.options.rename))

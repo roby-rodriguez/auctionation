@@ -1,23 +1,23 @@
 <div class="central">
     <h2>Auction <small>Here you can sell {{ selectedItem.type | capitalize }}</small></h2>
     <p>Enter the quantity you wish to bid and the minimum bidding price</p>
-    <div class="jumbotron text-center">
+    <div class="jumbotron jumbotron-alertable text-center">
         <div ng-include src="'templates/alert.html'"></div>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <label class="control-label">Available Quantity:</label>
-                    <p class="form-control-static">{{ selectedItem.quantity }}</p>
+            <div class="container create-popup">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="control-label">Available Quantity:</label>
+                        <p class="form-control-static">{{ selectedItem.quantity }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" placeholder="Enter quantity" ng-model="selectedItem.auction.quantity" />
+                        <input type="text" class="form-control" placeholder="Enter minimum bid price" ng-model="selectedItem.auction.minValue" />
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <input type="text" class="form-control" placeholder="Enter quantity" ng-model="selectedItem.auction.quantity" />
-                    <input type="text" class="form-control" placeholder="Enter minimum bid price" ng-model="selectedItem.auction.minValue" />
+                <div class="row">
+                    <button class="btn btn-primary" ng-click="createAuction()"><span class="fa fa-user"></span> Start Auction</button>
+                    <button class="btn btn-warning" ng-click="hidePopup()"><span class="fa fa-user"></span> Cancel</button>
                 </div>
             </div>
-            <div class="row">
-                <button class="btn btn-primary" ng-click="createAuction()"><span class="fa fa-user"></span> Start Auction</button>
-                <button class="btn btn-warning" ng-click="hidePopup()"><span class="fa fa-user"></span> Cancel</button>
-            </div>
-        </div>
     </div>
 </div>

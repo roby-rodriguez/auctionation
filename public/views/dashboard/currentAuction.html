@@ -1,8 +1,8 @@
 <div>
 	<a ui-sref="playerStats" class="pull-right btn btn-primary btn-outline btn-rounded">Back to Player Stats</a>
 	<h2>Current auction <small>Here you can check if there is an auction in progress</small></h2>
-	<span class="glyphicon glyphicon-dashboard bg-fade"></span>
-	<div class="jumbotron">
+	<span class="glyphicon glyphicon-dashboard top bg-fade"></span>
+	<div class="jumbotron jumbotron-alertable">
 		<div ng-include src="'templates/alert.html'"></div>
 		<div class="container" ng-hide="auction">
 			<h1>No auction at the moment.</h1>
@@ -22,7 +22,7 @@
 					</div>
 					<div class="col-md-2">
 						<label class="control-label">Time left</label>
-						<p class="form-control-static">{{auction.timeRemaining}}</p>
+						<p class="form-control-static"><span id="timeRemaining">{{auction.timeRemaining}}</span></p>
 					</div>
 					<div class="col-md-2">
 						<label class="control-label">Starting price</label>

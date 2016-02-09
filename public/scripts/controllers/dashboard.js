@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * @ngdoc function
  * @name auctionation.controller:DashboardCtrl
@@ -20,7 +18,7 @@ angular.module('auctionation')
             createAlert();
 
             AuctionFactory.setAuction(auction);
-            $rootScope.$broadcast('auctionChanged', []);
+            $rootScope.$broadcast('auctionChanged', $scope.alert);
         });
 
         socket.on('auction:bid', function (auction) {
@@ -30,7 +28,7 @@ angular.module('auctionation')
 
             // update current auction fields
             AuctionFactory.setAuction(auction);
-            $rootScope.$broadcast('auctionChanged', []);
+            $rootScope.$broadcast('auctionChanged', $scope.alert);
         });
 
         socket.on('auction:closed', function (auction) {
@@ -39,7 +37,7 @@ angular.module('auctionation')
             createAlert();
 
             AuctionFactory.reset();
-            $rootScope.$broadcast('auctionChanged', []);
+            $rootScope.$broadcast('auctionChanged', $scope.alert);
         });
 
         // don't know how clever this is but it does the job for now
@@ -62,6 +60,8 @@ angular.module('auctionation')
 
         socket.on('time:update', function (timeRemaining) {
             AuctionFactory.setTimeRemaining(timeRemaining);
+            if (timeRemaining < 10)
+                showTimeRunningLow(timeRemaining);
         });
 
         $scope.logout = function () {

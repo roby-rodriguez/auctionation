@@ -31,7 +31,7 @@ module.exports = {
         }
     },
     images: {
-        src:  devDir + '/resources/images/**/*.{jpg,jpeg,png,gif}',
+        src:  devDir + '/resources/images/**/*',
         dest: prodDir + '/resources/images/',
         cache: '.cache/resources/images',
         options: {
@@ -43,7 +43,7 @@ module.exports = {
         }
     },
     svgs: {
-        src:  devDir + '/resources/images/**/*.{svg}',
+        src:  devDir + '/resources/images/**/*.svg',
         dest: prodDir + '/resources/images/',
         cache: '.cache/resources/vector_graphics',
         options: {

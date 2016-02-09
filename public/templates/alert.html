@@ -1,4 +1,4 @@
-<div ng-attr-id="{{alert.id ? alert.id : 'alertMessage'}}" ng-class="'alert alert-dismissible alert-' + alert.type + ' fade in'" role="alert" style="display: none">
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+<div ng-attr-id="{{alert.id ? alert.id : 'alertMessage'}}" class="alert alert-dismissible alert-{{alert.type}} top fade in" role="alert">
+    <button type="button" class="close" onclick="closeAlert(this)" aria-label="Close"><span aria-hidden="true">&times;</span></button>
     <strong>{{alert.title}}:</strong> {{alert.message}}
 </div>

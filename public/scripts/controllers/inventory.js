@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * @ngdoc function
  * @name auctionation.controller:InventoryCtrl
@@ -8,7 +6,7 @@
  * Controller of auctionation
  */
 angular.module('auctionation')
-    .controller('InventoryCtrl', function($scope, $modal, socket, LoginFactory, InventoryPopupFactory) {
+    .controller('InventoryCtrl', function($scope, $uibModal, socket, LoginFactory, InventoryPopupFactory) {
 
         $scope.user = LoginFactory.getUser();
         $scope.items = initInventory();
@@ -26,7 +24,7 @@ angular.module('auctionation')
 
         $scope.showPopup = function (item) {
             InventoryPopupFactory.setSelectedItem(item);
-            var modalInstance = $modal.open({
+            var modalInstance = $uibModal.open({
                 animation: true,
                 templateUrl: 'views/dashboard/auction/createAuction.html',
                 controller: 'InventoryPopupCtrl',
@@ -50,37 +48,43 @@ angular.module('auctionation')
             return items;
         }
     })
-    .controller('InventoryPopupCtrl', function($scope, $modalInstance, LoginFactory, InventoryPopupFactory) {
+    .controller('InventoryPopupCtrl', function($scope, $uibModalInstance, LoginFactory, InventoryPopupFactory) {
         $scope.selectedItem = InventoryPopupFactory.getSelectedItem();
         $scope.user = LoginFactory.getUser();
+        $scope.alert = {
+            type: 'warning',
+            title: 'New auction',
+            message: "You can't auction more than you own",
+            id: 'modalalert'
+        };
 
         $scope.createAuction = function () {
-            delete $scope.alert;
             // assure submitted fields are not empty
-            if ($scope.selectedItem.auction.quantity && $scope.selectedItem.auction.minValue) {
-                if ($scope.selectedItem.quantity < $scope.selectedItem.auction.quantity) {
-                    var id = 'modalalert';
-                    $scope.alert = {
-                        type: 'warning',
-                        title: 'New auction',
-                        message: "You can't auction more than you own",
-                        id: id
-                    };
-                    $scope.$apply();
-                    createAlert(id);
+            var quantity = parseInt($scope.selectedItem.auction.quantity),
+                minValue = parseInt($scope.selectedItem.auction.minValue);
+            if (isNaN(quantity) || isNaN(minValue)) {
+                $scope.alert.message = "Wrong input!";
+                showPopup();
+            } else {
+                if ($scope.selectedItem.quantity < quantity) {
+                    showPopup();
                 } else {
                     // update display and user stats
-                    $scope.selectedItem.quantity -= $scope.selectedItem.auction.quantity;
+                    $scope.selectedItem.quantity -= quantity;
                     $scope.user.inventory[$scope.selectedItem.type] = $scope.selectedItem.quantity;
-                    $modalInstance.close($scope.selectedItem);
+                    $uibModalInstance.close($scope.selectedItem);
                 }
             }
         };
 
         $scope.hidePopup = function () {
-            $modalInstance.close();
+            $uibModalInstance.close();
         };
 
+        function showPopup() {
+            $scope.selectedItem.auction = {};
+            createAlert($scope.alert.id);
+        }
     })
     .factory('InventoryPopupFactory', function () {
         var selectedItem;

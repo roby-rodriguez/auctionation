@@ -43,6 +43,9 @@ module.exports = function (io) {
                     User.updateBidder(current);
                     // ideally only participants should be updated, for the purpose of this project -> update all
                     io.emit('user:update', current);
+                } else {
+                    // only auctioner should be updated
+                    io.emit('user:update', current);
                 }
                 // reset values
                 current = null;
