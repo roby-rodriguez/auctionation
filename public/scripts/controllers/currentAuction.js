@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * @ngdoc function
  * @name auctionation.controller:CurrentAuctionCtrl
@@ -14,17 +12,21 @@ angular.module('auctionation')
         $scope.auction = AuctionFactory.getAuction();
 
         $scope.placeBid = function () {
-            delete $scope.alert;
-            var minBid = $scope.auction.winningBid ? $scope.auction.winningBid : $scope.auction.minValue;
-            if ($scope.user.coins < minBid || $scope.user.coins < $scope.bid) {
+            if ($scope.bid > $scope.user.coins) {
+                // user tries to bid more than he owns
                 $scope.alert = {type: 'warning', title: 'New bid', message: "You don't have enough coins to bid"};
                 createAlert();
-            } else if ($scope.bid < minBid) {
-                $scope.alert = {type: 'warning', title: 'New bid', message: "You can't bid less than current winner or minimum bid"};
+            } else if ($scope.bid < $scope.auction.minValue) {
+                // first bid must be at least as high as the min value
+                $scope.alert = {type: 'warning', title: 'New bid', message: "You can't bid less than the minimum bid"};
+                createAlert();
+            } else if ($scope.auction.winningBid && $scope.bid <= $scope.auction.winningBid) {
+                // a winning bid already exists, so current bid must be higher
+                $scope.alert = {type: 'warning', title: 'New bid', message: "You can't bid less than the current winner"};
                 createAlert();
             } else {
-                // update user stats in frontend
-                $scope.user.coins -= $scope.bid;
+                // valid bid - update user stats in frontend
+                LoginFactory.updateCoins($scope.bid);
                 socket.emit('auction:bid', {
                     userName: $scope.user.name,
                     bid: $scope.bid

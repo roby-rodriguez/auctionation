@@ -65,8 +65,8 @@ module.exports = function (io) {
             var newAuction = {
                 userName: data.userName,
                 type: data.type,
-                quantity: data.quantity,
-                minValue: data.minValue,
+                quantity: parseInt(data.quantity),
+                minValue: parseInt(data.minValue),
                 //winningBid: data.minValue,
                 timeRemaining: Constants.TIMEOUT
             };
@@ -91,16 +91,23 @@ module.exports = function (io) {
         // broadcast new bids
         socket.on('auction:bid', function (data) {
             // if there's an auction going on and this is the highest bid so far
-            if (current) {// && (!current.winningBid || current.winningBid < data.bid)) {
-                current.winningBid = data.bid;
-                current.winningBidder = data.userName;
-                // adjust master clock if necessary
-                if (current.timeRemaining < Constants.TIMEOUT_CALLOUT) {
-                    current.timeRemaining += 10;
+            var validateMin, validateWin;
+            data.bid = parseInt(data.bid);
+            if (current && User.checkAllowedBid(data.userName, data.bid)) {
+                validateMin = !current.winningBid && current.minValue <= data.bid;
+                validateWin = current.winningBid && current.winningBid < data.bid;
+
+                if (validateMin || validateWin) {
+                    current.winningBid = data.bid;
+                    current.winningBidder = data.userName;
+                    // adjust master clock if necessary
+                    if (current.timeRemaining < Constants.TIMEOUT_CALLOUT) {
+                        current.timeRemaining += 10;
+                    }
+                    // tell listeners to adjust their clocks & other displayed information
+                    io.emit('auction:bid', current);
+                    console.log('New bid: ' + prettyPrint(current));
                 }
-                // tell listeners to adjust their clocks & other displayed information
-                io.emit('auction:bid', current);
-                console.log('New bid: ' + prettyPrint(current));
             }
         });
 

@@ -55,12 +55,16 @@ module.exports = {
     },
     updateAuctioner: function (auction) {
         var user = getUser(auction.userName);
-        user.coins += parseInt(auction.winningBid);
-        user.inventory[auction.type] -= parseInt(auction.quantity);
+        user.coins += auction.winningBid;
+        user.inventory[auction.type] -= auction.quantity;
     },
     updateBidder: function (auction) {
         var user = getUser(auction.winningBidder);
-        user.coins -= parseInt(auction.winningBid);
-        user.inventory[auction.type] += parseInt(auction.quantity);
+        user.coins -= auction.winningBid;
+        user.inventory[auction.type] += auction.quantity;
+    },
+    checkAllowedBid: function (userName, bidValue) {
+        var user = getUser(userName);
+        return user.coins >= bidValue;
     }
 };
