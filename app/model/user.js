@@ -1,37 +1,62 @@
 /**
  * User model
  */
-var users = [{
-    name: 'john',
-    coins: 1200,
-    inventory: {
-        bread: 24,
-        carrot: 22,
-        diamond: 1
-    },
-    loggedIn: false
-}];
+var Database = require('./database');
 
-function addNewUser(name) {
-    var newUser = {
-        name: name,
+function build(userName) {
+    return {
+        name: userName,
         coins: 1000,
         inventory: {
             bread: 30,
             carrot: 18,
             diamond: 1
-        },
-        loggedIn: false
+        }
+        //loggedIn: false
     };
-    users.push(newUser);
-    return newUser;
 }
 
-function getUser(name) {
-    for (var i = 0; i < users.length; i++) {
-        if (users[i].name === name)
-            return users[i];
-    }
+function find(userName) {
+    return Database.connect().then(function (database) {
+        return database.collection('user')
+            .find({ name: userName })
+            .limit(1)
+            .next();
+    });
+}
+
+function add(user) {
+    return Database.connect().then(function (database) {
+        return database.collection('user')
+            .insertOne(user);
+    });
+}
+
+function update(userName, data) {
+    return Database.connect().then(function (database) {
+        return database.collection('user')
+            .updateOne({ name: userName }, { $set: data });
+    });
+}
+
+function updateAuctioner(auction) {
+    return find(auction.userName).then(function (found) {
+        found.inventory[auction.type] -= auction.quantity;
+        return update(auction.userName, {
+            coins: found.coins + auction.winningBid,
+            inventory: found.inventory
+        });
+    });
+}
+
+function updateBidder(auction) {
+    return find(auction.winningBidder).then(function (found) {
+        found.inventory[auction.type] += auction.quantity;
+        return update(auction.winningBidder, {
+            coins: found.coins - auction.winningBid,
+            inventory: found.inventory
+        });
+    });
 }
 
 module.exports = {
@@ -40,31 +65,31 @@ module.exports = {
         if (!userName)
             return res.status(401).json({message: 'Empty credentials'});
 
-        var user = getUser(userName);
-        if (!user) user = addNewUser(userName);
-        user.loggedIn = true;
-        return res.json(user);
+        return find(userName).then(function (found) {
+            if (!found) {
+                var user = build(userName);
+                return add(user).then(function () {
+                    return res.json(user);
+                }, function (err) {
+                    return res.status(401).json({message: 'Could not add new user: ' + err});
+                });
+            }
+            return res.json(found);
+        }, function (err) {
+            return res.status(401).json({message: 'User not found: ' + err});
+        });
     },
-    isLoggedIn: function (userName) {
-        var user = getUser(userName);
-        return user ? user.loggedIn : false;
+    updateUserStats: function (auction) {
+        return updateAuctioner(auction).then(function () {
+            return updateBidder(auction);
+        })
     },
-    setLoggedIn: function (userName) {
-        var user = getUser(userName);
-        user.loggedIn = true;
-    },
-    updateAuctioner: function (auction) {
-        var user = getUser(auction.userName);
-        user.coins += auction.winningBid;
-        user.inventory[auction.type] -= auction.quantity;
-    },
-    updateBidder: function (auction) {
-        var user = getUser(auction.winningBidder);
-        user.coins -= auction.winningBid;
-        user.inventory[auction.type] += auction.quantity;
+    get: function (userName) {
+        return find(userName);
     },
     checkAllowedBid: function (userName, bidValue) {
-        var user = getUser(userName);
-        return user.coins >= bidValue;
+        return find(userName).then(function (found) {
+            return found ? (user.coins >= bidValue) : false;
+        });
     }
 };

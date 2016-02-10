@@ -20,7 +20,9 @@
     "body-parser"             : "*",
     "compression"             : "*",
     "morgan"                  : "*",
-    "socket.io"               : "*"
+    "socket.io"               : "*",
+    "mongodb"                 : "*",
+    "q"                       : "*"
   },
   "devDependencies": {
     "gulp"                    : "*",

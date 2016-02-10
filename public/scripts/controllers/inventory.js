@@ -36,6 +36,12 @@ angular.module('auctionation')
             });
         };
 
+        $scope.$on('updateStats', function (evt, alert) {
+            // FIXME this is ugly & retarded -> why the hell does ngular need this refresh?
+            $scope.user = LoginFactory.getUser();
+            $scope.items = initInventory();
+        });
+
         function initInventory() {
             var items = [];
             for (var prop in $scope.user.inventory) {

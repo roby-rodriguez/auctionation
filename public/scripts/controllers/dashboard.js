@@ -49,9 +49,11 @@ angular.module('auctionation')
         });
 
         socket.on('user:update', function () {
+            console.log('user:update');
             LoginService.login(LoginFactory.getUser(), function () {
                 $scope.alert = { type: 'info', title: 'User update', message: 'User stats have been updated' };
                 createAlert();
+                $rootScope.$broadcast('updateStats', $scope.alert);
             }).error(function (err) {
                 $scope.alert = { type: 'error', title: 'User update', message: err };
                 createAlert();
@@ -62,6 +64,9 @@ angular.module('auctionation')
             AuctionFactory.setTimeRemaining(timeRemaining);
             if (timeRemaining < 10)
                 showTimeRunningLow(timeRemaining);
+            else
+                // not very efficient
+                showTimeRunningLow();
         });
 
         $scope.logout = function () {

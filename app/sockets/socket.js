@@ -39,13 +39,13 @@ module.exports = function (io) {
                 io.emit('auction:closed', current);
                 // update user stats in case a valid trade took place
                 if (current.winningBid && current.winningBidder) {
-                    User.updateAuctioner(current);
-                    User.updateBidder(current);
-                    // ideally only participants should be updated, for the purpose of this project -> update all
-                    io.emit('user:update', current);
+                    User.updateUserStats(current).then(function () {
+                        // ideally only participants should be updated, for the purpose of this project -> update all
+                        io.emit('user:update');
+                    });
                 } else {
                     // only auctioner should be updated
-                    io.emit('user:update', current);
+                    io.emit('user:update');
                 }
                 // reset values
                 current = null;
@@ -79,14 +79,13 @@ module.exports = function (io) {
 
         // announce new logged in users of ongoing auctions
         socket.on('auction:check', function (userName) {
-            User.setLoggedIn(userName);
+            // should we keep a flag for login and only broadcast if active?
+            // or better yet is there any other solution here?
+            socket.broadcast.emit('user:logout', userName);
+            console.log('Logged out: ' + userName);
+
             if (current) {
                 socket.emit('auction:new', current);
-            }
-            // log out current user from any other browser sessions
-            if (User.isLoggedIn(userName)) {
-                socket.broadcast.emit('user:logout', userName);
-                console.log('Logged out: ' + userName);
             }
             console.log('Auction check: ' + prettyPrint(current) + ' user: ' + userName);
         });
@@ -96,30 +95,33 @@ module.exports = function (io) {
             // if there's an auction going on and this is the highest bid so far
             var validateMin, validateWin;
             data.bid = parseInt(data.bid);
-            if (current && User.checkAllowedBid(data.userName, data.bid)) {
-                validateMin = !current.winningBid && current.minValue <= data.bid;
-                validateWin = current.winningBid && current.winningBid < data.bid;
+            if (current) {
+                User.get(data.userName).then(function (found) {
+                    if (found && found.coins >= data.bid) {
+                        validateMin = !current.winningBid && current.minValue <= data.bid;
+                        validateWin = current.winningBid && current.winningBid < data.bid;
 
-                if (validateMin || validateWin) {
-                    current.winningBid = data.bid;
-                    current.winningBidder = data.userName;
-                    // adjust master clock if necessary
-                    if (current.timeRemaining < Constants.TIMEOUT_CALLOUT) {
-                        current.timeRemaining += 10;
+                        if (validateMin || validateWin) {
+                            current.winningBid = data.bid;
+                            current.winningBidder = data.userName;
+                            // adjust master clock if necessary
+                            if (current.timeRemaining < Constants.TIMEOUT_CALLOUT) {
+                                current.timeRemaining += 10;
+                            }
+                            // tell listeners to adjust their clocks & other displayed information
+                            io.emit('auction:bid', current);
+                            console.log('New bid: ' + prettyPrint(current));
+                        }
                     }
-                    // tell listeners to adjust their clocks & other displayed information
-                    io.emit('auction:bid', current);
-                    console.log('New bid: ' + prettyPrint(current));
-                }
+                });
             }
         });
 
         // log out current user from all sessions
         socket.on('user:logout', function (userName) {
-            if (User.isLoggedIn(userName)) {
-                socket.broadcast.emit('user:logout', userName);
-                console.log('Logged out: ' + userName);
-            }
+            // again should login flag be checked here before broadcast?
+            socket.broadcast.emit('user:logout', userName);
+            console.log('Logged out: ' + userName);
         });
     }
 };

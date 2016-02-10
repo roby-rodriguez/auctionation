@@ -5,7 +5,7 @@
 function createAlert(id) {
     var componentId = id ? '#' + id : "#alertMessage";
     $(componentId).show();
-    //$(componentId).delay(5000).fadeOut("slow", function () { $(this).hide(); });
+    $(componentId).delay(5000).fadeOut("slow", function () { $(this).hide(); });
 }
 
 function closeAlert(closeBtn) {
