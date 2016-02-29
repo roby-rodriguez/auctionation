@@ -82,14 +82,14 @@ module.exports = {
     updateUserStats: function (auction) {
         return updateAuctioner(auction).then(function () {
             return updateBidder(auction);
-        })
+        });
     },
     get: function (userName) {
         return find(userName);
     },
     checkAllowedBid: function (userName, bidValue) {
         return find(userName).then(function (found) {
-            return found ? (user.coins >= bidValue) : false;
+            return found ? (found.coins >= bidValue) : false;
         });
     }
 };
